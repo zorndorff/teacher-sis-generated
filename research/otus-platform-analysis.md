@@ -59,49 +59,91 @@ Eliminate the need for multiple disconnected tools by unifying:
 
 #### Assessment Types (from help.otus.com — 116+ articles on Advanced Assessments alone)
 
-| Type | Description |
-|------|-------------|
-| **Simple Assessment** | Basic assessment with straightforward scoring |
-| **Rubric Assessment** | Scored against custom rubrics with standards alignment |
-| **Plus(+) Assessment** | Enhanced assessment with additional features |
-| **Advanced Assessment** | Full-featured assessment with 50+ interactive question types |
+| Type | Description | Best For |
+|------|-------------|----------|
+| **Simple Assessment** | Quick-build with MC, T/F, Short Answer. Supports images, audio, video. Auto-scoring for MC and T/F. | Exit tickets, comprehension checks |
+| **Rubric Assessment** | Criterion-based evaluation with multiple descriptors and performance levels. File upload, audio/video recording support. Student submission optional. | Essays, artifacts, performance-based grades |
+| **Advanced Assessment** | Powered by Learnosity. 60+ question types across 11 categories. Auto-scoring with partial credit and alternate answers. | Math-heavy and lengthy assessments |
+| **Plus(+) Assessment** | Adds a gradebook column for work not completed in Otus. No student-facing component. Supports points and standards-based scales. | Hand-completed worksheets, external assignments |
+
+#### Advanced Assessment Question Types (11 Categories, 60+ Types)
+
+| Category | Question Types |
+|----------|---------------|
+| **Multiple Choice** | Basic MC (multiple response, block layout), Choice Matrix (standard, inline, labels) |
+| **Fill in the Blanks & Labeling** | Cloze Drag & Drop, Cloze Drop Down, Cloze with Text, Label Image (Drag & Drop / Drop Down / Text) |
+| **Classify, Match & Order** | Classification, Match List, Order List, Sort List |
+| **Written & Recorded** | Essay (Rich Text / Plain Text), Short Text, Audio Recorder, Video Recorder |
+| **Highlight & Drawing** | Drawing (compass, ruler tools), Shading, Token Highlight, Hotspot |
+| **Math** | Cloze Math, Cloze Math with Image, Math Essay with Rich Text, Desmos Advanced Math |
+| **Graphing** | Graphing (full/1st quadrant), Number Line (Drag & Drop / Plot) |
+| **Charts** | Bar Chart, Line Chart, Histogram, Dot Plot, Line Plot |
+| **Chemistry** | Chemistry Formula, Cloze Chemistry, Chemistry Essay, Cloze Chemistry with Image |
+| **Desmos** | Specialized math: Algebra 1/2, Geometry, Statistics, Economics, Calculus |
+| **Other** | File Upload, Image Annotation Upload, Rating, Gridded |
 
 #### Assessment Creation & Delivery
 - AI-powered question generator (standards-aligned MC, T/F, short answer)
-- 50+ engaging question types simulating high-stakes testing
+- 60+ engaging question types simulating high-stakes testing
 - Custom rubric creation with standards alignment
-- Extensive curated item bank
+- Extensive curated item bank (Mastery Item Bank — subscription-based tiers with thousands of items)
 - Assessment sharing across classrooms with copy/edit permissions
 - Multimedia support and Google Docs integration for submissions
-- Paper-based activity scoring (manual digital entry)
-- Assessment scheduling, time limits, and attempt controls
-- Accommodations and accessibility settings per student
+- Paper-based activity scoring (manual digital entry via Plus+ assessments)
+- Assessment scheduling: start date, due date, availability windows, time limits with auto-submission
+- Multiple attempts permitted
+- Randomize question order
+- Clone/duplicate assessments
+- Send copies to other teachers
+- Folder organization for assessments
+- Preview mode (see assessment as student would)
+- Assessment status tracking: Submitted, Graded, Not Started, On Time, Missing, Late, Excused, Excluded
+- Include/exclude score from final grade toggle
+- Question difficulty categorization: Basic, Intermediate, Advanced
+- Subject-specific question guides: ELA, Math, Science, Social Studies/History, Enrichment
 
 #### Pre-Built Assessment Libraries
 - 1,000+ "Otus Proficiency Assessments" aligned to Common Core
 - Subject coverage: reading, language usage, mathematics
-- Curriculum partner assessments (Bridges in Mathematics, Amplify Science, Amplify CKLA, National Geographic, EL Education, Cognia, Exemplars, Horizon Education)
+- Curriculum partner assessments (Bridges in Mathematics, Amplify Science, Amplify CKLA, National Geographic, EL Education, Cognia, Exemplars, Horizon Education, Wit & Wisdom)
+- Thin Common Cartridge (ThinCC) import for third-party instructional materials
 
 #### Testing & Accessibility Tools
-- **Texthelp** — Text-to-speech
-- **Turnitin** — Plagiarism detection
-- **Desmos** — Interactive math tools
-- **Respondus** — Test proctoring
-- Auto-scoring for advanced/interactive question types
+- **Texthelp Speechstream** — Text-to-speech
+- **Turnitin** — Plagiarism detection (LTI integration)
+- **Desmos** — Interactive math tools (embedded via iFrame)
+- **Respondus LockDown Browser** — Test proctoring
+- **Otus LockDown Browser Extension** — Chromebook-specific lockdown
+- Auto-scoring for MC, T/F, and advanced/interactive question types with partial credit
 
 #### Assessment Analytics
+- Assessment Analytics 2.0: class completion rates, performance summaries, item analysis, question breakdowns
 - AI-highlighted learning patterns
 - Question-level performance analytics
 - Targeted student group generation for support/extension
 - Standards mastery tracking per assessment
+- Printable assessment reports
 
 ### 3.2 Gradebook & Grading
 
+#### Two Primary Gradebook Views
+- **Assessments View** — All assigned assessments as columns; score display; student submission status; comment functionality; category weighting
+- **Standards View** — Each column is a standard; performance level via Mastery Settings; attempt count tracking; detailed performance history per cell; optional total grade conversion
+
 #### Gradebook Modes
 - **Standards-based grading** (flagship capability — purpose-built, not retrofitted)
-- **Traditional points-based grading**
+- **Traditional points-based grading** with category weighting (tests, journals, homework, etc.)
 - **Hybrid approaches** combining both methods
 - Customizable grading scales aligned to school/district systems
+
+#### Standards-Based Grading — 5 Mastery Settings
+| Setting | Calculation |
+|---------|-------------|
+| **Mean** | Average of all standard attempts |
+| **Mode** | Most frequently occurring score |
+| **Most Recent** | Latest attempt score |
+| **Highest** | Peak recorded score |
+| **Decaying Average** | Weights recent attempts more heavily (sub-settings: highest and average) |
 
 #### Standards-Based Grading Details
 - Standards appear as gradebook columns
@@ -110,16 +152,23 @@ Eliminate the need for multiple disconnected tools by unifying:
 - AI monitors standards progress at class and individual levels
 - Highlights trends in mastery and attempts
 - Subgroup analysis with AI-generated insights
+- Total Grade Conversion: converts mastery scores to traditional percentage/letter grades
 
 #### Gradebook Features (from help.otus.com — 20 articles)
+- Configurable tab order (Standards left/Assessments right or vice versa)
 - Manual and digital score entry
 - Direct assessment result flow into gradebook
 - Assignment management and categorization
 - Score overrides and exemptions
 - Comment entry per student/assignment
+- "Include Score in Final Grade" toggle per assessment
+- Grading periods (quarters, semesters, custom timeframes)
 - Final grade calculation and submission
-- Report card generation (customizable formats)
+- Report card generation:
+  - **Points Report Card** — Grades from points gradebook
+  - **Standards Report Card** — Mastery of priority standards; classes listed alphabetically; teacher name; optional grading scale key, school logo, family/student signature lines, notes, footer
 - Family-facing gradebook view (simplified)
+- Individual student gradebook drill-down
 
 #### AI in Grading
 - "Otus Insights" embedded chat within gradebook
@@ -135,15 +184,35 @@ Eliminate the need for multiple disconnected tools by unifying:
 - Nightly SIS sync for roster and demographic data
 - Eliminates manual spreadsheet management
 
-#### Analytics Dashboards (from help.otus.com — 40 articles)
-- Performance overview displays (strengths and opportunity areas)
-- Subgroup performance analysis with AI-generated visuals
-- Attendance tracking and visualization
-- Behavioral data analysis
-- Assessment performance metrics
-- Strategic planning dashboards
-- Real-time performance data at individual, school, and district levels
-- Historical tables and downloadable student summary reports
+#### Analytics Report Types (from help.otus.com — 40 articles)
+
+| Report Type | Description |
+|-------------|-------------|
+| **Assessment Analytics 2.0** | Class completion rates, performance summaries, item analysis, question breakdowns, printable reports |
+| **Standards Analytics (1.0 & 2.0)** | Up to 10 standards simultaneously; horizontal bar charts; filter by assessments, mastery settings, scales, date range; CSV export; student grouping with color coding; drill-down |
+| **3rd Party Analytics** | Tiles per uploaded external assessment; unique NWEA and PARCC/IAR displays; Custom Growth Assessment uploads |
+| **Attendance Report** | Time-framed attendance reporting with filters |
+| **Recognitions Report** | Positive/negative behavior visualization at student or classroom level |
+| **Query Reports** | Identify and compare student populations matching criteria across multiple data sources; matrix values for weighted criteria |
+| **Historical Analytics** | Compare student cohort performance across multiple school years |
+| **Report Cards** | Generate standards-based and points-based report cards |
+| **Type Comparison** | Compare performance across assessment types |
+| **Exports** | Data export (Main Admin only) |
+| **AI Insights** | AI assistant with data-driven recommendations; trends for PLC discussions |
+
+#### Analytics Permissions by Role
+
+| Report | Main Admin | Admin | Teacher |
+|--------|-----------|-------|---------|
+| 3rd Party Assessments | All students | Permitted students | Own class students |
+| Attendance | All | Permitted | Own classes |
+| Recognitions | All | Permitted | Own classes |
+| Otus Assessments | All | Permitted | Own classes |
+| Standards | All | Permitted | Own classes |
+| Report Cards | Yes | Yes | No |
+| Query Reports | Yes | Yes | No |
+| Historical Reports | Yes | Yes | No |
+| Exports | Yes | No | No |
 
 #### AI-Powered Analytics
 - Transforms complex data into clear visuals
@@ -160,12 +229,28 @@ Eliminate the need for multiple disconnected tools by unifying:
 
 ### 3.4 Progress Monitoring & MTSS
 
+#### Plan Types / Use Cases
+| Category | Examples |
+|----------|---------|
+| **Academic Support** | Credit recovery, intervention, personalized learning, progress monitoring |
+| **Student Services** | Check-in/check-out, observations, SEL assessments, behavior modification, RTI/MTSS |
+| **College & Career Readiness** | Pathway planning, graduation progress tracking |
+| **Eligibility Tracking** | Gifted identification, at-risk flagging, activity eligibility |
+
 #### Plan Management (from help.otus.com — 20 articles)
 - Custom individualized or group plans
 - Domains: academics, behavior, attendance, interventions, social-emotional learning
+- Customizable templates with overall evaluation scale, sections, and individual items
+- Items evaluated on different scales or formatted for text entry
+- District-created templates usable by any admin or teacher
+- Students added from class lists (teachers) or across sites/grade levels (admins)
+- Visual analytics: horizontal bar charts for item status breakdowns with drill-down
+- Historical performance tracking: graphs with trendlines showing progress over time
 - Achievable milestone setting aligned to student needs
 - Plans follow students year to year for seamless transitions
 - Plans visible to students and families for home-school collaboration
+- Downloadable student summary reports
+- Connect student goals to data so scores auto-update
 - Small group to district-wide MTSS support
 
 #### Tiered Intervention Support
@@ -195,24 +280,54 @@ Eliminate the need for multiple disconnected tools by unifying:
 ### 3.5 Classes & Instruction
 
 #### Class Management (from help.otus.com — 45 articles)
-- Class creation and roster management
-- Section management
-- Co-teaching/shared class support
-- Student enrollment and drops
-- Class-level settings and configurations
+- **Class Info** — Add/remove students, rename class, add co-teachers, manage details
+- **Class Board** — Announcement space for homework, projects, daily agendas
+- **Student Groups:**
+  - District-level groups (admin-created, usable district-wide)
+  - Class-level groups (teacher-created, specific to their classes)
+  - Used for differentiating instruction, assigning assessments/lessons, filtering analytics, adding to plans
+- **Co-Teacher Role** — Full second-instructor access: assign/unassign/grade assessments and lessons, manage class
+- **Mailbox** — One-way messaging from teachers to students/families; supports text messaging with country codes
+- **Student Profile** — Consolidated data, work artifacts, notes, family contacts, family communication log, portfolio
+- **Class Codes** — Unique identifiers for student enrollment
+- **Archived Classes** — Remove without data loss; restorable
+- **Delete Class** — Permanent removal with all grades
+- **Notification Feed** — Class activity list on home pages
+- **To-Do List / Calendar View** — Upcoming events display
+- **Recognitions** — Quick behavior documentation (positive/negative); district-created recognitions; family visibility
 
 #### Lessons (from help.otus.com — 26 articles)
-- Lesson planning and creation
-- Lesson delivery tools
-- Resource attachment
-- Standards alignment for lessons
+
+**Lesson Activity Types:**
+| Activity | Description |
+|----------|-------------|
+| **Add Resource** | File (PDF, Word, Excel), URL/Link, Image, Video (record 5 min / upload 30MB), YouTube, Audio (record 5 min / upload 30MB), Google Drive/OneDrive, Page (rich text) |
+| **Add Assessment** | Embed existing assessment within lesson |
+| **Add Question** | MC, T/F, or short answer directly in lesson |
+| **Add External Tool** | Embed LTI tools (Playposit, Newsela, Nearpod, Kahoot, etc.) enabled at district level |
+| **Add Instructions** | Text-only instructions |
+| **Add from Bookshelf** | Pull existing bookshelf resources |
+
+**Lesson Features:**
+- Drag-and-drop activity reordering
+- Activities presented as tiles in step-by-step format
+- Sequential or simultaneous student completion
+- Clone/duplicate lessons; send copies to other teachers
+- Auto-update: changes propagate to assigned students without reassignment
+- Assign to classes, groups, or individuals
+- Preview mode; due dates; blog integration
 
 #### Bookshelf (from help.otus.com — 7 articles)
-- Resource library for storing and organizing materials
-- Sharing resources across teams
+- Resource repository for uploading/sharing files in varied formats
+- "My Bookshelf" for user-created resources; "Shared with Me" for received resources
+- Share with students, groups, classes, or teachers
+- Accessible to families via student accounts
 
 #### Blog (from help.otus.com — 6 articles)
-- Blog module for class communication
+- Informal whole-class and private teacher-student messaging
+- Class Feed displaying all posts; allow/disallow student comments
+- Save as draft, schedule posts, publish to class feeds
+- Attachments (files, images, videos)
 
 ### 3.6 AI Insights ("Otus Insights")
 
@@ -245,14 +360,39 @@ Eliminate the need for multiple disconnected tools by unifying:
 
 ### 3.7 Administration & Control Center
 
-#### Control Center (from help.otus.com — 19 articles)
-- District-level settings and configuration
-- User management and provisioning
-- Role-based access controls
-- School/building management
-- Term and grading period configuration
-- Standards library management
-- Grading scale configuration
+#### Control Center (from help.otus.com — 19 articles, Main Admin only)
+
+**Grading Configuration:**
+- Grading Scales — Create/edit scales with named levels, descriptions, colors; set grade-level permissions
+- Mastery Settings — Configure which of 5 settings are available per grade level; set defaults
+- Standards Settings — Choose standard groups, manage custom standards, create standards tags
+- Total Grade Conversion — Convert standards mastery scores to traditional grades
+
+**User & Session Management:**
+- Admin Users — Manage administrative personnel; set permissions by site, district, or grade level
+- Academic Sessions — Configure school years and grading periods (quarters, semesters, custom)
+
+**Data & Integrations:**
+- Uploads — Attendance data upload; CSV data imports
+- LTI resource management (Turnitin, Playposit, Newsela, etc.)
+- SIS connection configuration
+- Grade passback setup
+- Turnitin integration activation
+
+**Operational:**
+- Standards-Based Grading Setup Guide (comprehensive admin workflow)
+- New School Year Preparation (administrator checklist for year rollover)
+
+### 3.8 Account Types & Roles
+
+| Role | Key Capabilities |
+|------|-----------------|
+| **Main Admin** | Full Control Center access; district-wide visibility; all analytics/reports/exports; manage all users |
+| **Admin** | Teacher capabilities plus administrative functions; site/grade-level permissions; Query/Historical reports |
+| **Teacher** | Create/assign/grade assessments and lessons; manage classes; view analytics for own students |
+| **Co-Teacher** | Nearly identical to Teacher within assigned class |
+| **Student** | Take assessments, complete lessons, view gradebook, blog, bookshelf, portfolio, recognitions |
+| **Family** | View gradebook, bookshelf, blog, recognitions, student profile; link/unlink students |
 
 ### 3.8 Family & Student Engagement
 
@@ -277,24 +417,41 @@ Eliminate the need for multiple disconnected tools by unifying:
 
 ## 4. Integration Ecosystem
 
-### SIS Partners (50+)
-PowerSchool, Infinite Campus, Skyward, Aeries, FACTS, and many others
+### SIS Partners (40+ confirmed systems)
+Aeries, Alma, Aspen, Aspire, ATS/Stars, Ascender, Blackbaud iNow, DASL/ProgressBook, eSchoolPlus, FACTS/RenWeb, Focus, Genesis, Infinite Campus, JMC, MiSIS, MiStar, MySchoolWorx, NebSIS, OnCourse, OnePoint, Pathways, PowerSchool, RealTime, Rediker, SchoolPathways, SchoolSpeak, SchoolTool, SchoolWise, Skyward (SMS & Qmlativ), Sycamore, Synergy, TADS, TeacherEase, Tyler, Veracross, Web2School
+
 - Nightly sync of students, teachers, rosters, demographics
 - Otus receives data from SIS; corrections must be made in source SIS
+- **Grade Passback** supported to: PowerSchool, Infinite Campus, Skyward, Aeries (nightly sync; points-based only; standards-based not supported for passback)
+
+### Alternative Rostering Methods
+Clever, ClassLink, OneRoster API, CSV flat file exports
 
 ### SSO Providers
-Clever, ClassLink, Google for Education
+Clever SSO, ClassLink, Google SSO
 
 ### Assessment/Data Partners
+
+**Automated Data Sync:**
 | Partner | Data Type |
 |---------|-----------|
 | NWEA MAP Growth | Benchmark assessments |
-| i-Ready | Diagnostic assessments |
+| i-Ready / Curriculum Associates | Diagnostic assessments (monthly) |
 | DreamBox Learning | Math adaptive learning |
 | Reading Plus | Reading intervention |
 | Renaissance Star | Assessments |
 | Renaissance FastBridge | Universal screening, CBM |
+| Kelvin | SEL surveys |
+
+**Manual Upload Supported:**
+| Partner | Data Type |
+|---------|-----------|
+| SBAC | State assessments |
+| PARCC / IAR | State assessments |
+| ACT | College readiness |
+| PSAT | College readiness |
 | SAT | College readiness |
+| Custom Growth Assessments | Any other data source |
 
 ### Curriculum Partners
 Amplify Science, Amplify CKLA, Bridges in Mathematics (Math Learning Center), National Geographic, EL Education, Cognia, Exemplars, Horizon Education, Discovery Education
