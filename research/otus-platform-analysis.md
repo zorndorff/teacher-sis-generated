@@ -550,179 +550,221 @@ Google Compute Engine also referenced on G2 Stack (possible multi-cloud or legac
 | Slack | Internal communications |
 | Google Analytics | Usage tracking |
 
-### 5.7 Application Architecture — Angular SPA Analysis
+### 5.7 Application Architecture — Angular SPA (Decompiled)
 
-#### Authentication Boundary
+#### SPA Shell Discovery
 
-The Otus web app at `my.otus.com` has a hard authentication boundary. The login page (`/login`) is server-rendered using jQuery + Zurb Foundation. After authentication, the Angular SPA is bootstrapped. All unauthenticated requests redirect to `/login` — no Angular bundles, routes, or chunk files are served without a valid session. This means:
+**Every URL on `my.otus.com` returns the same 12,073-byte HTML document.** There is no separate server-rendered login page — the server has a catch-all rewrite rule that serves the Angular shell for all paths. The Angular app itself handles routing to `/login` for unauthenticated users.
 
-- **No public Angular bundle extraction is possible** — all `.js` bundles are behind auth
-- **No service worker manifest** (`ngsw.json`) is publicly accessible
-- **No source maps** are publicly exposed
-- **Web Archive (Wayback Machine)** has no captures of the authenticated app
+- **Root component:** `<otus-app>` (custom prefix, not default `<app-root>`)
+- **Webpack chunk namespace:** `self.webpackChunkotus_app`
+- **Build tooling:** Angular CLI + webpack (hashed filenames, `type="module"` scripts)
+- **UI component library:** PrimeNG (CSS custom properties / design tokens)
+- **Legacy dependencies in shell:** jQuery 3.6.0, Moment 2.24.0, Foundation 6.2.4
+- **Fonts:** Lato (self-hosted from Google Fonts)
+- **Icons:** Font Awesome 5.9.0
 
-The route map below is **reverse-engineered from help documentation** (507+ articles), confirmed URL patterns, and navigation instructions across help.otus.com.
+#### Production Bundle Files
 
-#### Confirmed URL Patterns (from help.otus.com)
+| File | Content Hash | Size |
+|------|-------------|------|
+| `runtime.560445a470b1b348.js` | `560445a4...` | 7 KB |
+| `polyfills.e2195c0a3be26d2f.js` | `e2195c0a...` | 66 KB |
+| `scripts.adff6e5ddc86fce4.js` | `adff6e5d...` | 695 KB |
+| `vendor.c491d20d2cabba54.js` | `c491d20d...` | 1,638 KB |
+| `main.e89413495f1398bb.js` | `e8941349...` | 1,105 KB |
+| `styles.51ae2082382bf3d8.css` | `51ae2082...` | 1,453 KB |
 
-| URL | Source | Context |
-|-----|--------|---------|
-| `my.otus.com/login` | Multiple articles | Authentication entry point |
-| `my.otus.com/assessment/list` | Canvas LMS integration article | Shareable link for students to access all assigned assessments |
-| `my.otus.com/blog` | Lesson activity article | Universal link — routes each user to their blog feed |
+**Total initial payload:** ~5 MB (before lazy chunks)
+**Lazy-loaded chunks:** 139 numbered chunks in the webpack chunk map
 
-#### Primary Navigation — Left-Hand Sidebar Modules
+#### Complete Route Map (Decompiled from `main.js`)
 
-The app uses a **left-hand sidebar** with module icons. Each module is a top-level Angular route. Secondary navigation (tabs, sub-menus) appears within each module. Class/entity selection uses dropdown menus.
+##### Public Routes (no auth guard)
+
+| Path | Type | Component/Module |
+|------|------|-----------------|
+| `/login` | Eager | `Ys` component |
+| `/logout` | Eager | `js` component |
+| `/sso_login` | Lazy | `SSOLoginModule` (chunk 9176) |
+| `/reset-password/:retrieve_password_token` | Eager | `fs` component |
+| `/signup` | Eager | `Qs` component |
+| `/respondus` | Lazy | `RespondusModule` (chunk 737) |
+| `/forbidden` | Eager | `ss` component |
+| `/**` (wildcard) | Eager | `as` component (catch-all) |
+
+##### SSO OAuth2 Callback Routes
+
+| Path | Provider |
+|------|----------|
+| `/sso_login/social/google` | Google |
+| `/sso_login/social/microsoft` | Microsoft |
+| `/sso_login/social/clever` | Clever |
+| `/sso_login/social/classlink` | ClassLink |
+
+##### Authenticated Routes (3 guards: `kt.lI`, `kt.oT`, `kt.un`)
+
+Default redirect: `""` → `/home`
+
+| Path | Lazy Module | Purpose | Key Chunks |
+|------|------------|---------|------------|
+| `/home` | `HomeModule` | Landing page, notification feed, to-do, calendar | 8860, 3555, 6014, 3144, 8752, 7910, 7858, 6158, 8802, 4522 |
+| `/activity` | `HomeModule` (alias) | Same as /home | same |
+| `/dashboard` | `ActivityDashboardModule` | Admin usage analytics dashboard | 8752, 7910, 2871, 3889 |
+| `/district` | `DistrictModule` | Sites, teachers, students, groups, recognitions | 8860, 9373, 3555, 2967, 6014, 3144, 8752, 7910, 1201, 7858, 6876, 6139, 6158, 8802, 2737, 2932, 8592, 8190 |
+| `/classes` | `ClassesModule` | Class management, roster, board, mailbox | 8860, 9373, 3555, 2967, 6014, 4796, 3144, 8752, 7910, 1201, 7858, 6158, 8073, 8802, 1475, 2737, 7212, 4088 |
+| `/assessment` | `LearnosityModule` | Assessment creation & delivery (Learnosity-powered) | 9373, 6014, 1201, 6876, 6139, 4235, 7265, 6329, 9081, 9255, 6877 |
+| `/simple-assessment` | `OtusAssessModule` | Simple/Rubric/Plus assessment types | 8860, 9373, 3555, 5327, 6014, 3144, 2156, 3852, 1201, 7858, 6876, 4898, 6139, 4235, 7265, 2817, 6329, 1731, 2382, 7864, 9081, 9255, 435, 7043 |
+| `/gradebook` | `GradebookModule` | Standards & points-based grading | 6139, 4235, 7265, 6329, 9255, 4520, 8449, 6179 |
+| `/lessons` | `Lessons2Module` | Lesson listing & management | 8860, 9373, 3555, 5327, 6014, 3144, 7858, 4235, 6158, 2582, 5393, 4845, 6255, 1776, 7824, 8592, 553 |
+| `/lesson` | `OtusLessonModule` | Single lesson view/edit | 8860, 9373, 3555, 6014, 3144, 7858, 4235, 6158, 2582, 5393, 4845, 7824, 6093 |
+| `/analytics` | `AnalyticsModule` | Data dashboards, reports, exports | 8752, 7910, 7265, 789, 7498, 5866, 9954 |
+| `/plans` | `PlansModule` | Progress monitoring, MTSS, interventions | 8860, 3555, 8752, 7910, 3824, 2871, 344, 8977, 8210, 8592, 2294 |
+| `/blog` | `BlogModule` | Class blog feeds, posts | 8860, 9373, 5327, 2156, 3852, 6329, 6341, 3480, 8592, 1492 |
+| `/bookshelf` | `BookshelfModule` | Resource library | 8860, 9373, 3555, 5327, 6014, 3144, 8752, 7910, 6158, 2582, 6341, 5393, 5866, 9197 |
+| `/students` | `FamilyStudentModule` | Family/student portal view | 8592, 850 |
+| `/student-profile` | `StudentViewPageModule` | Student profile detail view | 40+ chunks |
+| `/my-portfolio` | `PortfolioModule` (v1) | Student portfolio (legacy) | 34+ chunks |
+| `/portfolio` | `PortfolioV2Routes` | Student portfolio (v2, feature-gated) | chunk 9465 |
+| `/reports` | `StudentReportModule` | Student reports | 30+ chunks |
+| `/control-center` | `ControlCenterModule` | Admin settings, grading, standards, integrations | 8860, 9373, 6014, 1201, 6876, 6139, 1731, 2932, 8592, 7847 |
+| `/profile` | `ProfileModule` | User profile settings | 9373, 7212, 1759 |
+| `/otus-ai` | `OtusAiPageModule` | AI Insights (Otus AI chat) | 3555, 9674, 7498, 8332 |
+| `/certica` | `CerticaModule` | Standards alignment (Certica/Instructure) | chunk 9987 |
+| `/secret` | `SettingsModule` | Internal/dev settings | chunk 2055 |
+
+##### Feature Flags (Unleash via `uedge.otus.com`)
+
+| Flag | Purpose |
+|------|---------|
+| `ai-feature-add-to-groups` | AI → student group creation |
+| `ai-feature-ask-otus-everywhere-enable` | Global AI assistant |
+| `ai-feature-full-page` | Full-page AI mode |
+| `ai-feature-stream-cancellation-button-enable` | Cancel AI streaming |
+| `ai-feature-stream-response-enable` | Streaming AI responses |
+| `ai-feature-token-streaming` | Token-level streaming |
+| `current-user-bff-routing` | BFF migration: current user |
+| `login-bff-routing` | BFF migration: login |
+| `logout-bff-routing` | BFF migration: logout |
+| `enable-portfolio-v2` | Portfolio v2 (feature gate for `/portfolio` route) |
+
+Feature toggle endpoint: `/napi/sysinfo/feature-toggles/`
+
+#### Backend Service Architecture (5 Services)
+
+| Service | URL Pattern | Purpose |
+|---------|-------------|---------|
+| **BFF** | `https://{bff.hostName}/...` | Primary API (auth, portfolios, milestones, assignments, assessments) |
+| **Gateway** | `{gatewayUrl}/...` | OAuth2 SSO proxy, login/logout fallback |
+| **NAPI (PHP)** | `{platformBaseUrl}/napi/...` | Legacy PHP endpoints (courses, attachments, feature toggles, otusassess) |
+| **Platform API** | `{platformBaseUrl}/api/...` | User info, navigation permissions |
+| **OIB** | `{platformBaseUrl}/oib/...` | AI chat service (Otus Insights) |
+| **External Tools** | `{platformBaseUrl}/external-tools/...` | LTI/Turnitin/GradeCam integrations |
+
+#### BFF API Endpoints (Decompiled)
+
+**Authentication:**
+- `POST /authentication/login`
+- `POST /authentication/logout`
+- `POST /authentication/impersonate`
+
+**Users:**
+- `GET /users/myself`
+- `GET /users/myself/permissions`
+
+**Admin endpoints** (`/admin/...`):
+- `/admin/assessments/*`, `/admin/assignments/*`, `/admin/milestones/*`
+- `/admin/portfolio/*`, `/admin/sections/*`, `/admin/students/*`
+- `/admin/third-party-analytics/*`
+
+**Teacher endpoints** (`/teacher/...`):
+- `/teacher/assessments/*`, `/teacher/assignments/*`, `/teacher/courses/*`
+- `/teacher/milestones/*`, `/teacher/sections/*`, `/teacher/skills/*`
+- `/teacher/students/*`
+
+**Student endpoints** (`/student/...`):
+- `/student/assessments/*`, `/student/assignments/*`, `/student/portfolio/*`
+
+**AI/Chat (OIB service):**
+- `POST /chat`, `GET /chat/recent`
+- `GET /chat/{id}/stream`
+- `POST /chat/{id}/messages/{id}/feedback`
+- `POST /chat/pre-stream/create`
+- `GET /behaviors`
+
+**Legacy NAPI PHP endpoints** (`/napi/...`):
+- `/course/*`, `/user/*`, `/teacher/*`, `/parents/*`, `/site/*`
+- `/student_course/*`, `/analytics/*`, `/bookshelf/*`, `/coteacher/*`
+- `/demo_class/*`, `/otusassess/*`, `/attachments/*`
+- `/controlcenter/*`, `/captcha/*`
+
+**District:**
+- `GET /district/attributes`
+
+#### Production Infrastructure
+
+**Hostnames (decompiled from environment config):**
+
+| Hostname | Purpose |
+|----------|---------|
+| `my.otus.com` | Main frontend |
+| `fe.platform.otus.com` | Platform frontend |
+| `internal.otus.com` | Internal services |
+| `uedge.otus.com` | Unleash feature flags edge proxy |
+| `authorapi.learnosity.com` | Learnosity assessment authoring |
+| `items.learnosity.com` | Learnosity item bank |
+| `reports.learnosity.com` | Learnosity reporting |
+| `app.gradecam.com` | GradeCam integration |
+
+**Dev/Staging:**
+- `my.otus.dev`, `my-west.otus.dev` (dev frontends)
+- `api.my.otus.dev`, `api.my-west.otus.dev` (dev APIs)
+- `pen.my.otusplatform.net`, `pen-api.otusplatform.net` (pen test)
+- `preprod.otusplatform.net`, `preprod-api.otusplatform.net` (pre-prod)
+
+**Observability:** Grafana Faro collector (3 collection IDs) for frontend performance monitoring
+
+#### 25 Lazy-Loaded Angular Modules (Complete)
 
 ```
-my.otus.com/
-│
-├── /login                          # jQuery/Foundation (pre-auth, NOT Angular)
-│
-├── /home (or /dashboard)           # Activity Dashboard
-│   └── Interactive district usage charts, notification feed, to-do list/calendar
-│
-├── /district                       # District Module (Admin/Main Admin)
-│   ├── /district/sites             # School site tiles
-│   ├── /district/teachers          # Teacher directory (searchable)
-│   ├── /district/students          # Student directory (searchable)
-│   ├── /district/student-groups    # Create, edit, view, delete groups
-│   ├── /district/teacher-groups    # Create, edit, view, delete groups
-│   └── /district/recognitions      # Create, edit, view, delete recognitions
-│
-├── /classes                        # Classes Module
-│   ├── /classes?classId={id}       # Class selected via dropdown (not path param)
-│   ├── → Students tab              # Student roster, profiles, portfolio
-│   ├── → Class Board tab           # Announcements, homework, agendas
-│   ├── → Mailbox tab               # One-way messaging to students/families
-│   └── → Class Info tab            # Roster management, co-teachers, settings
-│
-├── /assessment                     # Assessments Module
-│   ├── /assessment/list            # All assessments (confirmed URL)
-│   ├── → Created tab               # Teacher-created assessments
-│   ├── → Assigned tab              # Currently assigned assessments (class filter dropdown)
-│   ├── → Shared tab                # Assessments shared with/by others
-│   ├── → Folders                   # Folder organization
-│   └── /assessment/{id}            # Individual assessment (create/edit/grade/preview)
-│
-├── /gradebook                      # Gradebook Module
-│   ├── → Assessments tab           # Points-based gradebook columns
-│   │   └── Class dropdown, grading period dropdown
-│   │   └── Double-click cells to enter/edit grades
-│   │   └── Ellipsis menu → export, missing report
-│   ├── → Standards tab             # Standards-based gradebook columns
-│   │   └── Standards as columns, mastery settings toggle
-│   │   └── Click cell → performance history drill-down
-│   └── → Individual Student view   # Click student name → detailed student gradebook
-│
-├── /lessons                        # Lessons Module
-│   ├── → Created/Assigned tabs     # Lesson management
-│   └── /lessons/{id}               # Individual lesson (create/edit/preview/assign)
-│
-├── /analytics                      # Analytics Module
-│   ├── → 3rd Party tab             # External assessment data tiles
-│   ├── → Attendance tab            # Attendance reports
-│   ├── → Recognitions tab          # Behavior visualization
-│   ├── → Assessment tab            # Assessment Analytics 2.0
-│   ├── → Standards tab             # Standards Analytics (bar charts, CSV export)
-│   ├── → Reports sub-menu          # (Admin/Main Admin only)
-│   │   ├── → Query                 # Cross-source population analysis
-│   │   ├── → Historical            # Multi-year cohort comparison
-│   │   └── → Report Cards          # Generate report cards
-│   └── → Exports                   # Data export (Main Admin only)
-│
-├── /plans                          # Plans Module
-│   ├── → Plan Templates            # Create/view district plan templates
-│   ├── → Student Plans             # Active plans with student lists
-│   │   ├── → Full Plan: Student List View
-│   │   ├── → Full Plan: Details View  # Read-only structure + analytics charts
-│   │   └── → Individual Student Plan  # Per-student plan with summary reports
-│   └── → Historical Performance    # Progress graphs with trendlines
-│
-├── /blog                           # Blog Module (confirmed URL)
-│   └── Per-class blog feeds, post management
-│
-├── /bookshelf                      # Bookshelf Module
-│   ├── → My Bookshelf              # User-created resources
-│   └── → Shared with Me            # Received resources
-│
-├── /control-center                 # Control Center (Main Admin only)
-│   ├── → Grading                   # Grading scales, mastery settings, standards settings
-│   ├── → Admin Users               # User management, permissions
-│   ├── → Uploads                   # CSV imports, attendance data, family info, photos
-│   ├── → Academic Sessions         # School years, grading periods
-│   └── → Integrations              # LTI, SIS, grade passback, Turnitin
-│
-├── /help                           # Help Module (links to help.otus.com)
-│
-└── (Student/Family Views)
-    ├── /assessment/list             # Student: assigned assessments
-    ├── /blog                        # Student: class blog feed
-    ├── /gradebook                   # Student/Family: view-only gradebook
-    ├── /bookshelf                   # Student/Family: shared resources
-    └── /portfolio                   # Student: artifact repository
+ActivityDashboardModule    FamilyStudentModule    OtusAiPageModule
+AnalyticsModule           GradebookModule        OtusAssessModule
+BlogModule                HomeModule             OtusLessonModule
+BookshelfModule           LearnosityModule       PlansModule
+CerticaModule             Lessons2Module         PortfolioModule
+ClassesModule             PortfolioV2Routes      ProfileModule
+ControlCenterModule       RespondusModule        SSOLoginModule
+DistrictModule            SettingsModule         StudentReportModule
+                          StudentViewPageModule
 ```
 
-#### Navigation Patterns
+#### Navigation Patterns (from help.otus.com, 507+ articles)
 
 **Module Selection:** Left-hand sidebar icons → loads module root route
-**Entity Context:** Class selection via **dropdown menu** (not URL path segments). Most views are filtered by the currently-selected class.
+**Entity Context:** Class selection via **dropdown menu** (not URL path segments)
 **Sub-Navigation:** Tabs within each module (e.g., Assessments tab / Standards tab in Gradebook)
 **Drill-Down:** Click entity → detail view (e.g., click student name → individual gradebook)
-**Admin Hierarchy:** District → Sites → Teachers/Students (navigated via tiles and sub-menus, not deep URL paths)
-
-#### Key Observations for ORL Mapping
-
-1. **Class-scoped context is via dropdown, not URL** — The app doesn't use `/classes/123/gradebook` paths; instead, you navigate to `/gradebook` and select a class from a dropdown. This means the Angular routes are **flat modules**, not deeply nested entity paths.
-
-2. **Entity IDs likely appear as query params, not path segments** — The confirmed `/assessment/list` pattern suggests list views. Individual entities likely use `/assessment/{id}` or `/assessment?id={id}` patterns.
-
-3. **District hierarchy is admin-only** — The `/district/sites`, `/district/teachers`, `/district/students` hierarchy maps directly to ORL's flat entity types under district.
-
-4. **No confirmed multi-level URL nesting** — Unlike the ORL spec's `district/42/site/5/course/101/assignment/9` pattern, the Angular app appears to use flat routes with context selection via UI state (dropdowns, breadcrumbs), not URL hierarchy.
-
-5. **Two confirmed deep-linkable paths** — `/assessment/list` and `/blog` are the only URLs documented as "shareable links" in help articles. This suggests most entity views require session state (selected class, selected student) that isn't in the URL.
-
-#### Inferred Angular Module Structure
-
-Based on the sidebar modules and Angular lazy-loading patterns (confirmed via job postings mentioning Angular 7+ and webpack):
-
-```typescript
-// Inferred AppRoutingModule (not actual source code)
-const routes: Routes = [
-  { path: 'login', component: LoginComponent },  // May be outside Angular (jQuery page)
-  { path: '', canActivate: [AuthGuard], children: [
-    { path: 'home',           loadChildren: () => import('./home/home.module') },
-    { path: 'district',       loadChildren: () => import('./district/district.module') },
-    { path: 'classes',        loadChildren: () => import('./classes/classes.module') },
-    { path: 'assessment',     loadChildren: () => import('./assessment/assessment.module') },
-    { path: 'gradebook',      loadChildren: () => import('./gradebook/gradebook.module') },
-    { path: 'lessons',        loadChildren: () => import('./lessons/lessons.module') },
-    { path: 'analytics',      loadChildren: () => import('./analytics/analytics.module') },
-    { path: 'plans',          loadChildren: () => import('./plans/plans.module') },
-    { path: 'blog',           loadChildren: () => import('./blog/blog.module') },
-    { path: 'bookshelf',      loadChildren: () => import('./bookshelf/bookshelf.module') },
-    { path: 'control-center', loadChildren: () => import('./control-center/control-center.module'),
-                               canActivate: [MainAdminGuard] },
-  ]},
-  { path: '**', redirectTo: 'home' }
-];
-```
+**Admin Hierarchy:** District → Sites → Teachers/Students (tiles and sub-menus within `/district`)
 
 #### ORL ↔ Angular Route Resolution Mapping
 
-| ORL Pattern | Likely Angular Route | Notes |
-|-------------|---------------------|-------|
-| `orl://district/{did}` | `/district/sites` | District landing shows site tiles |
-| `orl://district/{did}/site/{sid}` | `/district/sites?siteId={sid}` | Site detail within district module |
-| `orl://district/{did}/student/{stuid}` | `/classes → Students tab → click student` | Requires class context selection |
-| `orl://district/{did}/teacher/{tid}` | `/district/teachers?teacherId={tid}` | Teacher directory drill-down |
-| `orl://district/{did}/site/{sid}/course/{cid}` | `/classes?classId={cid}` | Classes use dropdown, not hierarchy |
-| `orl://district/{did}/.../assignment/{aid}` | `/assessment/{aid}` or `/assessment/list → click` | Flat route, no hierarchy in URL |
-| `orl://district/{did}/standard/{stdid}` | `/gradebook → Standards tab → click standard` | Standard detail within gradebook |
-| `orl://district/{did}/group/{gid}` | `/district/student-groups?groupId={gid}` | Group management in district module |
-| `orl://district/{did}/session/{sessid}` | `/control-center → Academic Sessions` | Session config in admin area |
+| ORL Pattern | Angular Route | Resolution Strategy |
+|-------------|--------------|---------------------|
+| `orl://district/{did}` | `/district` | District module landing (site tiles) |
+| `orl://district/{did}/site/{sid}` | `/district` + site selection | Dropdown/tile selection within district module |
+| `orl://district/{did}/student/{stuid}` | `/student-profile?studentId={stuid}` | `StudentViewPageModule` handles student detail |
+| `orl://district/{did}/teacher/{tid}` | `/district` → Teachers sub-nav | Teacher directory within district module |
+| `orl://district/{did}/site/{sid}/course/{cid}` | `/classes?classId={cid}` | ClassesModule, class selected via dropdown |
+| `orl://district/{did}/.../assignment/{aid}` | `/assessment/{aid}` or `/simple-assessment/{aid}` | LearnosityModule or OtusAssessModule depending on type |
+| `orl://district/{did}/standard/{stdid}` | `/gradebook` → Standards tab | GradebookModule, standard column drill-down |
+| `orl://district/{did}/group/{gid}` | `/district` → Student Groups | DistrictModule, group management sub-nav |
+| `orl://district/{did}/session/{sessid}` | `/control-center` → Academic Sessions | ControlCenterModule |
+
+**Key architectural insight:** The Angular app uses **flat module routes** with UI-state context (dropdowns, tabs) rather than hierarchical URL segments. The ORL `ResolveToWebRoute()` function needs to:
+1. Map entity type to owning Angular module path
+2. Pass entity ID as query parameter or state
+3. Handle the assessment type split (`/assessment` for Learnosity advanced vs `/simple-assessment` for Simple/Rubric/Plus)
+4. Account for role-based route availability (e.g., `/control-center` requires Main Admin)
 
 ### 5.8 Engineering Team
 
