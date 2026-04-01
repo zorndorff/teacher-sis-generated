@@ -614,7 +614,7 @@ Default redirect: `""` → `/home`
 | `/district` | `DistrictModule` | Sites, teachers, students, groups, recognitions | 8860, 9373, 3555, 2967, 6014, 3144, 8752, 7910, 1201, 7858, 6876, 6139, 6158, 8802, 2737, 2932, 8592, 8190 |
 | `/classes` | `ClassesModule` | Class management, roster, board, mailbox | 8860, 9373, 3555, 2967, 6014, 4796, 3144, 8752, 7910, 1201, 7858, 6158, 8073, 8802, 1475, 2737, 7212, 4088 |
 | `/assessment` | `LearnosityModule` | Assessment creation & delivery (Learnosity-powered) | 9373, 6014, 1201, 6876, 6139, 4235, 7265, 6329, 9081, 9255, 6877 |
-| `/simple-assessment` | `OtusAssessModule` | Simple/Rubric/Plus assessment types | 8860, 9373, 3555, 5327, 6014, 3144, 2156, 3852, 1201, 7858, 6876, 4898, 6139, 4235, 7265, 2817, 6329, 1731, 2382, 7864, 9081, 9255, 435, 7043 |
+| `/simple-assessment` | `OtusAssessModule` | Simple/Rubric/Plus assessment types. Sub-routes: `/assignment`, `/preview`, `/review` | 8860, 9373, 3555, 5327, 6014, 3144, 2156, 3852, 1201, 7858, 6876, 4898, 6139, 4235, 7265, 2817, 6329, 1731, 2382, 7864, 9081, 9255, 435, 7043 |
 | `/gradebook` | `GradebookModule` | Standards & points-based grading | 6139, 4235, 7265, 6329, 9255, 4520, 8449, 6179 |
 | `/lessons` | `Lessons2Module` | Lesson listing & management | 8860, 9373, 3555, 5327, 6014, 3144, 7858, 4235, 6158, 2582, 5393, 4845, 6255, 1776, 7824, 8592, 553 |
 | `/lesson` | `OtusLessonModule` | Single lesson view/edit | 8860, 9373, 3555, 6014, 3144, 7858, 4235, 6158, 2582, 5393, 4845, 7824, 6093 |
@@ -627,7 +627,7 @@ Default redirect: `""` → `/home`
 | `/my-portfolio` | `PortfolioModule` (v1) | Student portfolio (legacy) | 34+ chunks |
 | `/portfolio` | `PortfolioV2Routes` | Student portfolio (v2, feature-gated) | chunk 9465 |
 | `/reports` | `StudentReportModule` | Student reports | 30+ chunks |
-| `/control-center` | `ControlCenterModule` | Admin settings, grading, standards, integrations | 8860, 9373, 6014, 1201, 6876, 6139, 1731, 2932, 8592, 7847 |
+| `/control-center` | `ControlCenterModule` | Admin settings, grading, standards, integrations. Sub-route: `/integrations/external-tools/:id` | 8860, 9373, 6014, 1201, 6876, 6139, 1731, 2932, 8592, 7847 |
 | `/profile` | `ProfileModule` | User profile settings | 9373, 7212, 1759 |
 | `/otus-ai` | `OtusAiPageModule` | AI Insights (Otus AI chat) | 3555, 9674, 7498, 8332 |
 | `/certica` | `CerticaModule` | Standards alignment (Certica/Instructure) | chunk 9987 |
