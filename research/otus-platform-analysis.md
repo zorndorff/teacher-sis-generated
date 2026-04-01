@@ -550,48 +550,179 @@ Google Compute Engine also referenced on G2 Stack (possible multi-cloud or legac
 | Slack | Internal communications |
 | Google Analytics | Usage tracking |
 
-### 5.7 Application Architecture (Inferred)
+### 5.7 Application Architecture — Angular SPA Analysis
 
-Based on the help documentation structure and feature set, the Angular app likely contains these major modules/routes:
+#### Authentication Boundary
+
+The Otus web app at `my.otus.com` has a hard authentication boundary. The login page (`/login`) is server-rendered using jQuery + Zurb Foundation. After authentication, the Angular SPA is bootstrapped. All unauthenticated requests redirect to `/login` — no Angular bundles, routes, or chunk files are served without a valid session. This means:
+
+- **No public Angular bundle extraction is possible** — all `.js` bundles are behind auth
+- **No service worker manifest** (`ngsw.json`) is publicly accessible
+- **No source maps** are publicly exposed
+- **Web Archive (Wayback Machine)** has no captures of the authenticated app
+
+The route map below is **reverse-engineered from help documentation** (507+ articles), confirmed URL patterns, and navigation instructions across help.otus.com.
+
+#### Confirmed URL Patterns (from help.otus.com)
+
+| URL | Source | Context |
+|-----|--------|---------|
+| `my.otus.com/login` | Multiple articles | Authentication entry point |
+| `my.otus.com/assessment/list` | Canvas LMS integration article | Shareable link for students to access all assigned assessments |
+| `my.otus.com/blog` | Lesson activity article | Universal link — routes each user to their blog feed |
+
+#### Primary Navigation — Left-Hand Sidebar Modules
+
+The app uses a **left-hand sidebar** with module icons. Each module is a top-level Angular route. Secondary navigation (tabs, sub-menus) appears within each module. Class/entity selection uses dropdown menus.
 
 ```
 my.otus.com/
-├── /login                    (jQuery/Foundation - pre-auth)
-├── /dashboard                (Landing page post-auth)
-├── /classes                  (Class management, rosters, sections)
-│   ├── /classes/:id/assessments
-│   ├── /classes/:id/gradebook
-│   ├── /classes/:id/lessons
-│   ├── /classes/:id/blog
-│   └── /classes/:id/students
-├── /assessments              (Assessment creation, item bank, delivery)
-│   ├── /assessments/create
-│   ├── /assessments/library
-│   └── /assessments/:id/results
-├── /gradebook                (Standards-based & traditional grading)
-│   ├── /gradebook/standards
-│   ├── /gradebook/assignments
-│   └── /gradebook/report-cards
-├── /analytics                (Data dashboards, reports)
-│   ├── /analytics/performance
-│   ├── /analytics/attendance
-│   ├── /analytics/behavior
-│   └── /analytics/subgroups
-├── /plans                    (Progress monitoring, MTSS)
-│   ├── /plans/create
-│   ├── /plans/:id/monitor
-│   └── /plans/interventions
-├── /students                 (Student profiles, whole-learner view)
-│   └── /students/:id
-├── /bookshelf                (Resource library)
-├── /insights                 (AI assistant - Otus Insights)
-├── /control-center           (Admin settings - district/school config)
-│   ├── /control-center/users
-│   ├── /control-center/standards
-│   ├── /control-center/grading-scales
-│   └── /control-center/integrations
-└── /family                   (Family portal view)
+│
+├── /login                          # jQuery/Foundation (pre-auth, NOT Angular)
+│
+├── /home (or /dashboard)           # Activity Dashboard
+│   └── Interactive district usage charts, notification feed, to-do list/calendar
+│
+├── /district                       # District Module (Admin/Main Admin)
+│   ├── /district/sites             # School site tiles
+│   ├── /district/teachers          # Teacher directory (searchable)
+│   ├── /district/students          # Student directory (searchable)
+│   ├── /district/student-groups    # Create, edit, view, delete groups
+│   ├── /district/teacher-groups    # Create, edit, view, delete groups
+│   └── /district/recognitions      # Create, edit, view, delete recognitions
+│
+├── /classes                        # Classes Module
+│   ├── /classes?classId={id}       # Class selected via dropdown (not path param)
+│   ├── → Students tab              # Student roster, profiles, portfolio
+│   ├── → Class Board tab           # Announcements, homework, agendas
+│   ├── → Mailbox tab               # One-way messaging to students/families
+│   └── → Class Info tab            # Roster management, co-teachers, settings
+│
+├── /assessment                     # Assessments Module
+│   ├── /assessment/list            # All assessments (confirmed URL)
+│   ├── → Created tab               # Teacher-created assessments
+│   ├── → Assigned tab              # Currently assigned assessments (class filter dropdown)
+│   ├── → Shared tab                # Assessments shared with/by others
+│   ├── → Folders                   # Folder organization
+│   └── /assessment/{id}            # Individual assessment (create/edit/grade/preview)
+│
+├── /gradebook                      # Gradebook Module
+│   ├── → Assessments tab           # Points-based gradebook columns
+│   │   └── Class dropdown, grading period dropdown
+│   │   └── Double-click cells to enter/edit grades
+│   │   └── Ellipsis menu → export, missing report
+│   ├── → Standards tab             # Standards-based gradebook columns
+│   │   └── Standards as columns, mastery settings toggle
+│   │   └── Click cell → performance history drill-down
+│   └── → Individual Student view   # Click student name → detailed student gradebook
+│
+├── /lessons                        # Lessons Module
+│   ├── → Created/Assigned tabs     # Lesson management
+│   └── /lessons/{id}               # Individual lesson (create/edit/preview/assign)
+│
+├── /analytics                      # Analytics Module
+│   ├── → 3rd Party tab             # External assessment data tiles
+│   ├── → Attendance tab            # Attendance reports
+│   ├── → Recognitions tab          # Behavior visualization
+│   ├── → Assessment tab            # Assessment Analytics 2.0
+│   ├── → Standards tab             # Standards Analytics (bar charts, CSV export)
+│   ├── → Reports sub-menu          # (Admin/Main Admin only)
+│   │   ├── → Query                 # Cross-source population analysis
+│   │   ├── → Historical            # Multi-year cohort comparison
+│   │   └── → Report Cards          # Generate report cards
+│   └── → Exports                   # Data export (Main Admin only)
+│
+├── /plans                          # Plans Module
+│   ├── → Plan Templates            # Create/view district plan templates
+│   ├── → Student Plans             # Active plans with student lists
+│   │   ├── → Full Plan: Student List View
+│   │   ├── → Full Plan: Details View  # Read-only structure + analytics charts
+│   │   └── → Individual Student Plan  # Per-student plan with summary reports
+│   └── → Historical Performance    # Progress graphs with trendlines
+│
+├── /blog                           # Blog Module (confirmed URL)
+│   └── Per-class blog feeds, post management
+│
+├── /bookshelf                      # Bookshelf Module
+│   ├── → My Bookshelf              # User-created resources
+│   └── → Shared with Me            # Received resources
+│
+├── /control-center                 # Control Center (Main Admin only)
+│   ├── → Grading                   # Grading scales, mastery settings, standards settings
+│   ├── → Admin Users               # User management, permissions
+│   ├── → Uploads                   # CSV imports, attendance data, family info, photos
+│   ├── → Academic Sessions         # School years, grading periods
+│   └── → Integrations              # LTI, SIS, grade passback, Turnitin
+│
+├── /help                           # Help Module (links to help.otus.com)
+│
+└── (Student/Family Views)
+    ├── /assessment/list             # Student: assigned assessments
+    ├── /blog                        # Student: class blog feed
+    ├── /gradebook                   # Student/Family: view-only gradebook
+    ├── /bookshelf                   # Student/Family: shared resources
+    └── /portfolio                   # Student: artifact repository
 ```
+
+#### Navigation Patterns
+
+**Module Selection:** Left-hand sidebar icons → loads module root route
+**Entity Context:** Class selection via **dropdown menu** (not URL path segments). Most views are filtered by the currently-selected class.
+**Sub-Navigation:** Tabs within each module (e.g., Assessments tab / Standards tab in Gradebook)
+**Drill-Down:** Click entity → detail view (e.g., click student name → individual gradebook)
+**Admin Hierarchy:** District → Sites → Teachers/Students (navigated via tiles and sub-menus, not deep URL paths)
+
+#### Key Observations for ORL Mapping
+
+1. **Class-scoped context is via dropdown, not URL** — The app doesn't use `/classes/123/gradebook` paths; instead, you navigate to `/gradebook` and select a class from a dropdown. This means the Angular routes are **flat modules**, not deeply nested entity paths.
+
+2. **Entity IDs likely appear as query params, not path segments** — The confirmed `/assessment/list` pattern suggests list views. Individual entities likely use `/assessment/{id}` or `/assessment?id={id}` patterns.
+
+3. **District hierarchy is admin-only** — The `/district/sites`, `/district/teachers`, `/district/students` hierarchy maps directly to ORL's flat entity types under district.
+
+4. **No confirmed multi-level URL nesting** — Unlike the ORL spec's `district/42/site/5/course/101/assignment/9` pattern, the Angular app appears to use flat routes with context selection via UI state (dropdowns, breadcrumbs), not URL hierarchy.
+
+5. **Two confirmed deep-linkable paths** — `/assessment/list` and `/blog` are the only URLs documented as "shareable links" in help articles. This suggests most entity views require session state (selected class, selected student) that isn't in the URL.
+
+#### Inferred Angular Module Structure
+
+Based on the sidebar modules and Angular lazy-loading patterns (confirmed via job postings mentioning Angular 7+ and webpack):
+
+```typescript
+// Inferred AppRoutingModule (not actual source code)
+const routes: Routes = [
+  { path: 'login', component: LoginComponent },  // May be outside Angular (jQuery page)
+  { path: '', canActivate: [AuthGuard], children: [
+    { path: 'home',           loadChildren: () => import('./home/home.module') },
+    { path: 'district',       loadChildren: () => import('./district/district.module') },
+    { path: 'classes',        loadChildren: () => import('./classes/classes.module') },
+    { path: 'assessment',     loadChildren: () => import('./assessment/assessment.module') },
+    { path: 'gradebook',      loadChildren: () => import('./gradebook/gradebook.module') },
+    { path: 'lessons',        loadChildren: () => import('./lessons/lessons.module') },
+    { path: 'analytics',      loadChildren: () => import('./analytics/analytics.module') },
+    { path: 'plans',          loadChildren: () => import('./plans/plans.module') },
+    { path: 'blog',           loadChildren: () => import('./blog/blog.module') },
+    { path: 'bookshelf',      loadChildren: () => import('./bookshelf/bookshelf.module') },
+    { path: 'control-center', loadChildren: () => import('./control-center/control-center.module'),
+                               canActivate: [MainAdminGuard] },
+  ]},
+  { path: '**', redirectTo: 'home' }
+];
+```
+
+#### ORL ↔ Angular Route Resolution Mapping
+
+| ORL Pattern | Likely Angular Route | Notes |
+|-------------|---------------------|-------|
+| `orl://district/{did}` | `/district/sites` | District landing shows site tiles |
+| `orl://district/{did}/site/{sid}` | `/district/sites?siteId={sid}` | Site detail within district module |
+| `orl://district/{did}/student/{stuid}` | `/classes → Students tab → click student` | Requires class context selection |
+| `orl://district/{did}/teacher/{tid}` | `/district/teachers?teacherId={tid}` | Teacher directory drill-down |
+| `orl://district/{did}/site/{sid}/course/{cid}` | `/classes?classId={cid}` | Classes use dropdown, not hierarchy |
+| `orl://district/{did}/.../assignment/{aid}` | `/assessment/{aid}` or `/assessment/list → click` | Flat route, no hierarchy in URL |
+| `orl://district/{did}/standard/{stdid}` | `/gradebook → Standards tab → click standard` | Standard detail within gradebook |
+| `orl://district/{did}/group/{gid}` | `/district/student-groups?groupId={gid}` | Group management in district module |
+| `orl://district/{did}/session/{sessid}` | `/control-center → Academic Sessions` | Session config in admin area |
 
 ### 5.8 Engineering Team
 
