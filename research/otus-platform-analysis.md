@@ -746,6 +746,48 @@ DistrictModule            SettingsModule         StudentReportModule
 **Drill-Down:** Click entity → detail view (e.g., click student name → individual gradebook)
 **Admin Hierarchy:** District → Sites → Teachers/Students (tiles and sub-menus within `/district`)
 
+**Role-Based Landing Pages:**
+| Role | Landing Route | Module |
+|------|--------------|--------|
+| Main Admin | `/dashboard` | `ActivityDashboardModule` |
+| Admin | `/dashboard` | `ActivityDashboardModule` |
+| Teacher | `/home` | `HomeModule` |
+| Student | `/home` | `HomeModule` |
+| Family | `/students` | `FamilyStudentModule` (gradebook-focused) |
+
+**Student Profile Navigation (via `/student-profile` → `StudentViewPageModule`):**
+
+The student profile is a key entity view with 4 tab areas:
+```
+Student Profile
+├── Main
+│   ├── Gradebook (standards & points views)
+│   ├── Standards mastery
+│   └── Plans (associated learning plans)
+├── Content
+│   ├── Portfolio (artifacts, assessments, documents)
+│   └── Blog posts
+├── Reports
+│   ├── Assessment list
+│   ├── Recognition log
+│   ├── Attendance log
+│   └── 3rd party assessment data
+└── Information
+    ├── District groups
+    ├── Classes
+    ├── Grade levels
+    ├── Family contacts
+    ├── Communication logs
+    ├── Notes
+    └── Attachments
+```
+
+These tabs map to ORL `#fragment` view state:
+- `orl://district/{did}/student/{stuid}#grades` → Student Profile → Main tab
+- `orl://district/{did}/student/{stuid}#portfolio` → Student Profile → Content tab
+- `orl://district/{did}/student/{stuid}#reports` → Student Profile → Reports tab
+- `orl://district/{did}/student/{stuid}#info` → Student Profile → Information tab
+
 #### ORL ↔ Angular Route Resolution Mapping
 
 | ORL Pattern | Angular Route | Resolution Strategy |
